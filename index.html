@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#091523">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Calculate your Pearson BTEC Level 3 Aviation Operations Extended Diploma (QCF) overall grade and UCAS Tariff points. Free, mobile friendly and no sign-in required.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Aviation Operations Grade Calculator">
+  <meta property="og:description" content="Tap P, M or D for your aviation units, then calculate your BTEC grade and UCAS points.">
+  <title>Aviation Operations | Grade Calculator</title>
+  <style>
+    :root{color-scheme:dark;--bg:#091523;--surface:#102337;--surface2:#142a41;--border:#243e55;--text:#f4f8fc;--muted:#91a9bb;--blue:#86d9f6;--focus:#9ccfff;--radius:18px}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.45}
+    body::before{content:"";position:absolute;inset:0 0 auto;height:350px;pointer-events:none;background:radial-gradient(ellipse 65% 70% at 80% 3%,#1a4762 0%,transparent 75%);opacity:.6;z-index:-1}
+    main{max-width:760px;margin:0 auto;padding:32px 18px max(62px,env(safe-area-inset-bottom))}
+    .brand{display:flex;align-items:center;gap:11px;margin-bottom:30px}
+    .brandmark{width:37px;height:37px;display:grid;place-items:center;border-radius:11px;background:linear-gradient(135deg,#bceeff,#65beda);font-weight:900;color:#092236;font-size:15px;letter-spacing:-.06em}
+    .brandname{font-size:13px;line-height:1.12;letter-spacing:.09em;font-weight:800}
+    .brandname span{display:block;color:var(--muted);font-weight:600;font-size:10px;letter-spacing:.15em;margin-top:4px}
+    header{padding-bottom:22px}
+    .kicker{display:inline-block;font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;color:#a1dfef;background:#174056;border:1px solid #2c6073;padding:7px 11px;border-radius:99px;margin:0 0 15px}
+    h1{font-size:clamp(31px,6.7vw,49px);letter-spacing:-.06em;line-height:1.06;margin:0 0 12px;font-weight:830;max-width:580px}
+    .lede{font-size:14px;color:#b6cada;max-width:530px;margin:0}
+    .bar{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:24px 0 11px}
+    h2{font-size:18px;letter-spacing:-.02em;margin:0}
+    .progress{font-variant-numeric:tabular-nums;color:#adc5d5;font-size:12px}
+    .unit-list{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:#102135}
+    .unit{display:flex;gap:10px;justify-content:space-between;align-items:center;padding:13px 13px;min-height:72px}
+    .unit+.unit{border-top:1px solid var(--border)}
+    .unit:nth-child(even){background:rgba(255,255,255,.015)}
+    .unit-label{flex:1;min-width:0;padding-right:4px}
+    .unit-label strong{display:flex;align-items:baseline;gap:10px;font-size:13px;font-weight:650;line-height:1.3;letter-spacing:-.005em}
+    .unit-num{color:#83a7c1;flex:0 0 20px;font-size:11px;font-variant-numeric:tabular-nums}
+    .unit-label small{display:block;margin-top:5px;margin-left:30px;font-size:11px;color:var(--muted)}
+    .mandatory{color:#97cce7}
+    .grade-buttons{display:flex;flex-shrink:0;gap:5px}
+    .grade-buttons button{font:800 14px/1 inherit;font-family:inherit;font-weight:800;font-size:14px;cursor:pointer;touch-action:manipulation;color:#c9dce9;background:#182e42;border:1px solid #3b5870;border-radius:9px;width:42px;height:42px;transition:background .14s,border-color .14s,transform .1s}
+    .grade-buttons button:active{transform:scale(.95)}
+    .grade-buttons button[data-grade=P][aria-pressed=true]{color:#052737;background:#88d9f6;border-color:#88d9f6}
+    .grade-buttons button[data-grade=M][aria-pressed=true]{color:#103124;background:#9fe9be;border-color:#9fe9be}
+    .grade-buttons button[data-grade=D][aria-pressed=true]{color:#302044;background:#d8b9ff;border-color:#d8b9ff}
+    button:focus-visible,a:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+    .action-area{margin-top:20px}
+    .calculate{width:100%;border:0;border-radius:13px;padding:18px;background:linear-gradient(115deg,#b7eaff,#7dcaec);color:#0a273c;font-size:17px;line-height:1.2;font-family:inherit;font-weight:850;cursor:pointer;box-shadow:0 9px 24px #050b1580;touch-action:manipulation}
+    .calculate:active{transform:translateY(1px)}
+    .actions-meta{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:14px 2px 0;color:var(--muted);font-size:11px}
+    .reset{background:none;border:0;color:#bcd9ea;font-size:11px;text-decoration:underline;text-underline-offset:3px;padding:8px 2px;cursor:pointer}
+    .result{display:none;margin-top:20px;border:1px solid #3c7793;border-radius:var(--radius);background:linear-gradient(145deg,#153549,#112438);padding:21px 20px 22px;scroll-margin-top:24px}
+    .result.visible{display:block}
+    .result.error{border-color:#9b7059;background:#39291f}
+    .result h3{font-size:14px;margin:0 0 15px;font-weight:700;color:#c3deef}
+    .stats{display:grid;grid-template-columns:1fr 1fr;gap:17px}
+    .stat-label{display:block;font-size:11px;color:#aec9db;margin-bottom:4px}
+    .stat-value{font-size:clamp(32px,7vw,48px);font-weight:880;letter-spacing:-.04em;line-height:1.1;font-variant-numeric:tabular-nums}
+    .result-note{margin:15px 0 0;font-size:12px;color:#aec9db;line-height:1.5}
+    .result.error .result-note{color:#f4d4be;margin:0}
+    .info{font-size:11px;color:var(--muted);line-height:1.7;margin:30px 2px 0;border-top:1px solid var(--border);padding-top:16px}
+    .info a{color:#a7d8f2;text-underline-offset:2px}
+    @media (max-width:410px){main{padding:24px 12px 60px}header{padding-bottom:12px}.unit{padding:12px 9px;gap:6px}.unit-label strong{font-size:12px;gap:6px}.unit-num{flex-basis:17px}.unit-label small{margin-left:23px}.grade-buttons{gap:4px}.grade-buttons button{width:37px;height:39px}.bar{margin-top:18px}.brand{margin-bottom:26px}}
+    @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+  </style>
+</head>
+<body>
+  <main>
+    <div class="brand"><div class="brandmark" aria-hidden="true">AO</div><div class="brandname">AVIATION OPERATIONS<span>GRADE CALCULATOR</span></div></div>
+    <header>
+      <div class="kicker">BTEC LEVEL 3 · EXTENDED DIPLOMA</div>
+      <h1>Know your<br>final grade.</h1>
+      <p class="lede">Choose <strong>P</strong>, <strong>M</strong> or <strong>D</strong> for each unit you are taking. Tap a selected grade again to clear it, then calculate your overall grade and UCAS points.</p>
+    </header>
+    <section aria-label="Aviation unit grades">
+      <div class="bar"><h2>Unit grades</h2><span class="progress" id="progress">0 units selected</span></div>
+      <div class="unit-list" id="units">
+        <div class="unit" data-unit="1" data-credits="10" data-level="3" data-mandatory="true">
+          <div class="unit-label">
+            <strong><span class="unit-num">01</span><span>The UK Aviation Industry</span></strong>
+            <small>10 credits <span class="mandatory">· Compulsory</span></small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 1: The UK Aviation Industry grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="2" data-credits="7" data-level="3" data-mandatory="true">
+          <div class="unit-label">
+            <strong><span class="unit-num">02</span><span>Health and Safety in the Aviation Industry</span></strong>
+            <small>7 credits <span class="mandatory">· Compulsory</span></small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 2: Health and Safety in the Aviation Industry grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="3" data-credits="4" data-level="3" data-mandatory="true">
+          <div class="unit-label">
+            <strong><span class="unit-num">03</span><span>Security in the Aviation Industry</span></strong>
+            <small>4 credits <span class="mandatory">· Compulsory</span></small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 3: Security in the Aviation Industry grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="4" data-credits="6" data-level="3" data-mandatory="true">
+          <div class="unit-label">
+            <strong><span class="unit-num">04</span><span>Inter-relationships Within the UK Aviation Industry</span></strong>
+            <small>6 credits <span class="mandatory">· Compulsory</span></small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 4: Inter-relationships Within the UK Aviation Industry grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="5" data-credits="8" data-level="3" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">05</span><span>Development of the UK Aviation Industry Since 1945</span></strong>
+            <small>8 credits</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 5: Development of the UK Aviation Industry Since 1945 grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="6" data-credits="6" data-level="3" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">06</span><span>Aviation Geography and Terminology</span></strong>
+            <small>6 credits</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 6: Aviation Geography and Terminology grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="7" data-credits="7" data-level="3" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">07</span><span>Customer Service in the Aviation Industry</span></strong>
+            <small>7 credits</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 7: Customer Service in the Aviation Industry grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="8" data-credits="4" data-level="3" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">08</span><span>Team Leadership</span></strong>
+            <small>4 credits</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 8: Team Leadership grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="9" data-credits="7" data-level="3" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">09</span><span>Managing Conflict in Aviation</span></strong>
+            <small>7 credits</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 9: Managing Conflict in Aviation grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="10" data-credits="9" data-level="3" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">10</span><span>Marketing in the Aviation Industry</span></strong>
+            <small>9 credits</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 10: Marketing in the Aviation Industry grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="11" data-credits="4" data-level="3" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">11</span><span>E-Business for Airlines</span></strong>
+            <small>4 credits</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 11: E-Business for Airlines grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="12" data-credits="9" data-level="3" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">12</span><span>Human Resources in the Aviation Industry</span></strong>
+            <small>9 credits</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 12: Human Resources in the Aviation Industry grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="13" data-credits="5" data-level="3" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">13</span><span>Preparation for Employment in the Aviation Industry</span></strong>
+            <small>5 credits</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 13: Preparation for Employment in the Aviation Industry grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="14" data-credits="6" data-level="3" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">14</span><span>Airport and Airline Commercial Operations</span></strong>
+            <small>6 credits</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 14: Airport and Airline Commercial Operations grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="15" data-credits="6" data-level="3" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">15</span><span>Passenger Terminal Management Within the Aviation Industry</span></strong>
+            <small>6 credits</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 15: Passenger Terminal Management Within the Aviation Industry grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="16" data-credits="7" data-level="3" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">16</span><span>Airline and Airport Economics</span></strong>
+            <small>7 credits</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 16: Airline and Airport Economics grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="17" data-credits="10" data-level="3" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">17</span><span>Environmental Impacts of Aviation</span></strong>
+            <small>10 credits</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 17: Environmental Impacts of Aviation grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="18" data-credits="10" data-level="3" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">18</span><span>Researching Current Issues in Aviation</span></strong>
+            <small>10 credits</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 18: Researching Current Issues in Aviation grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="19" data-credits="4" data-level="3" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">19</span><span>Handling Air Passengers</span></strong>
+            <small>4 credits</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 19: Handling Air Passengers grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="20" data-credits="5" data-level="3" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">20</span><span>Ramp Handling</span></strong>
+            <small>5 credits</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 20: Ramp Handling grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="21" data-credits="6" data-level="3" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">21</span><span>Aircraft Dispatch</span></strong>
+            <small>6 credits</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 21: Aircraft Dispatch grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="22" data-credits="9" data-level="3" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">22</span><span>Onboard Passenger Operations</span></strong>
+            <small>9 credits</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 22: Onboard Passenger Operations grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="23" data-credits="4" data-level="2" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">23</span><span>Aviation Communicators</span></strong>
+            <small>4 credits · Level 2</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 23: Aviation Communicators grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="24" data-credits="2" data-level="3" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">24</span><span>The Principles of Flight</span></strong>
+            <small>2 credits</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 24: The Principles of Flight grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="25" data-credits="4" data-level="3" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">25</span><span>Aircraft Take-off and Landing Performance</span></strong>
+            <small>4 credits</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 25: Aircraft Take-off and Landing Performance grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="26" data-credits="5" data-level="3" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">26</span><span>Flight Operations</span></strong>
+            <small>5 credits</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 26: Flight Operations grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="27" data-credits="7" data-level="3" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">27</span><span>Airfield Operations</span></strong>
+            <small>7 credits</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 27: Airfield Operations grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="28" data-credits="4" data-level="3" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">28</span><span>Bird and Wildlife Control on Airports and Airfields</span></strong>
+            <small>4 credits</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 28: Bird and Wildlife Control on Airports and Airfields grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="29" data-credits="3" data-level="3" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">29</span><span>Aviation Meteorology for Ground Staff</span></strong>
+            <small>3 credits</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 29: Aviation Meteorology for Ground Staff grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="30" data-credits="2" data-level="2" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">30</span><span>Aircraft Marshalling</span></strong>
+            <small>2 credits · Level 2</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 30: Aircraft Marshalling grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="31" data-credits="3" data-level="2" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">31</span><span>Airport Baggage Processing</span></strong>
+            <small>3 credits · Level 2</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 31: Airport Baggage Processing grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+        <div class="unit" data-unit="32" data-credits="5" data-level="3" data-mandatory="false">
+          <div class="unit-label">
+            <strong><span class="unit-num">32</span><span>Plan the Loading of Aircraft</span></strong>
+            <small>5 credits</small>
+          </div>
+          <div class="grade-buttons" role="group" aria-label="Unit 32: Plan the Loading of Aircraft grade">
+            <button type="button" data-grade="P" aria-pressed="false" title="Pass">P</button>
+            <button type="button" data-grade="M" aria-pressed="false" title="Merit">M</button>
+            <button type="button" data-grade="D" aria-pressed="false" title="Distinction">D</button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="action-area">
+      <button type="button" class="calculate" id="calculate">Calculate my grade</button>
+      <div class="actions-meta"><span id="saved-label">Choices saved on this device</span><button type="button" class="reset" id="reset">Clear all selections</button></div>
+    </div>
+    <div id="result" class="result" role="status" aria-live="polite" aria-atomic="true"></div>
+    <p class="info">For the <strong>Pearson BTEC Level 3 Extended Diploma in Aviation Operations (QCF)</strong>, qualification number 600/6439/0. Requires four compulsory units and a valid 180-credit combination. When you enter more credits, this calculator uses the highest-scoring eligible 180-credit combination as an estimate; Pearson and your centre determine your final award. Results are an aid to planning, not official certification.<br><br>
+      <a href="https://qualifications.pearson.com/content/dam/pdf/BTEC-Nationals/Aviation-Operations/2010/Specification/9781446935262-btec-90c-l3-aviationops-iss2.pdf" target="_blank" rel="noopener noreferrer">Pearson specification and grading rules</a>
+      &nbsp;·&nbsp;
+      <a href="https://www.ucas.com/applying/before-you-apply/what-and-where-to-study/entry-requirements/calculate-your-ucas-tariff-points" target="_blank" rel="noopener noreferrer">UCAS Tariff information</a>
+    </p>
+  </main>
+  <script>
+    'use strict';
+    (() => {
+      const STORAGE_KEY = 'aviation-operations-grade-calculator-v2';
+      const units = [...document.querySelectorAll('.unit')].map(element => ({
+        element,
+        number: Number(element.dataset.unit),
+        credits: Number(element.dataset.credits),
+        level: Number(element.dataset.level),
+        mandatory: element.dataset.mandatory === 'true',
+        buttons: [...element.querySelectorAll('.grade-buttons button')]
+      }));
+      const selections = {};
+      const result = document.getElementById('result');
+      const progress = document.getElementById('progress');
+      const gradeTable = [
+        { threshold:0, grade:'PPP', ucas:48 },
+        { threshold:1300, grade:'MPP', ucas:64 },
+        { threshold:1340, grade:'MMP', ucas:80 },
+        { threshold:1380, grade:'MMM', ucas:96 },
+        { threshold:1420, grade:'DMM', ucas:112 },
+        { threshold:1460, grade:'DDM', ucas:128 },
+        { threshold:1500, grade:'DDD', ucas:144 },
+        { threshold:1530, grade:'D*DD', ucas:152 },
+        { threshold:1560, grade:'D*D*D', ucas:160 },
+        { threshold:1590, grade:'D*D*D*', ucas:168 }
+      ];
+      function unitPoints(unit, grade) {
+        const base = unit.level === 2 ? 5 : unit.level === 4 ? 9 : 7;
+        return unit.credits * (base + {P:0,M:1,D:2}[grade]);
+      }
+      function updateButtons() {
+        let chosen = 0, credits = 0;
+        for(const unit of units) {
+          const grade = selections[unit.number];
+          if(grade) { chosen++; credits += unit.credits; }
+          for(const button of unit.buttons) {
+            button.setAttribute('aria-pressed', String(button.dataset.grade === grade));
+          }
+        }
+        progress.textContent = `${chosen} / ${units.length} units · ${credits} credits entered`;
+      }
+      function save() {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(selections)); }
+        catch { document.getElementById('saved-label').textContent = 'Selections may not persist in this browser'; }
+      }
+      function load() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+          for(const unit of units) if(['P','M','D'].includes(saved[unit.number])) selections[unit.number] = saved[unit.number];
+        } catch { /* localStorage can be unavailable in private browsing or file previews. */ }
+      }
+      function renderMessage(message) {
+        result.className = 'result visible error';
+        result.innerHTML = '<h3>More grades needed</h3><p class="result-note"></p>';
+        result.querySelector('p').textContent = message;
+        result.scrollIntoView({behavior:'smooth', block:'start'});
+      }
+      function calculate() {
+        const graded = units.filter(u => selections[u.number]);
+        const missingCompulsory = units.filter(u => u.mandatory && !selections[u.number]).map(u => u.number);
+        if(missingCompulsory.length) {
+          return renderMessage('Select a grade for compulsory Unit'+(missingCompulsory.length>1?'s ':' ')+missingCompulsory.join(', ')+'.');
+        }
+        const creditsEntered = graded.reduce((total,u) => total + u.credits,0);
+        if(creditsEntered < 180) {
+          return renderMessage(`You have selected ${creditsEntered} of 180 required credits. Enter grades for your remaining planned units, including predicted grades if you want a forecast.`);
+        }
+        const basePoints = graded.filter(u=>u.mandatory).reduce((n,u)=>n+unitPoints(u,selections[u.number]),0);
+        // Exact-credit knapsack: 153 optional credits; four mandatory units supply 27.
+        // Every optional Level 2 unit in this qualification totals only 9 credits,
+        // so any 153-credit optional combination always meets the Level 3 minimum.
+        const dp = Array(154).fill(-Infinity);
+        dp[0]=0;
+        for(const unit of graded.filter(u=>!u.mandatory)) {
+          const points = unitPoints(unit,selections[unit.number]);
+          for(let c=153;c>=unit.credits;c--) {
+            if(dp[c-unit.credits] !== -Infinity) dp[c] = Math.max(dp[c], dp[c-unit.credits]+points);
+          }
+        }
+        if(dp[153] === -Infinity) {
+          return renderMessage('The selected units do not form a valid 180-credit combination (27 mandatory + 153 optional). Enter grades for other units, or ask your tutor which units count towards your qualification.');
+        }
+        const score = basePoints + dp[153];
+        const row = [...gradeTable].reverse().find(x => score >= x.threshold);
+        result.className='result visible';
+        result.innerHTML = '<h3>Estimated final qualification</h3><div class="stats"><div><span class="stat-label">Overall BTEC grade</span><strong class="stat-value" id="res-grade"></strong></div><div><span class="stat-label">UCAS points</span><strong class="stat-value" id="res-ucas"></strong></div></div><p class="result-note" id="res-detail"></p>';
+        document.getElementById('res-grade').textContent = row.grade;
+        document.getElementById('res-ucas').textContent = row.ucas;
+        document.getElementById('res-detail').textContent = `${score} weighted grade points from a 180-credit combination. ${creditsEntered>180?`You entered ${creditsEntered} credits; the highest-scoring eligible 180-credit combination was used.`:'This estimate uses exactly the 180 credits you entered.'}`;
+        result.scrollIntoView({behavior:'smooth', block:'start'});
+      }
+      for(const unit of units) for(const button of unit.buttons) {
+        button.addEventListener('click', () => {
+          const value = button.dataset.grade;
+          if(selections[unit.number] === value) delete selections[unit.number];
+          else selections[unit.number] = value;
+          updateButtons();save();
+          result.className='result'; result.textContent='';
+        });
+      }
+      document.getElementById('calculate').addEventListener('click', calculate);
+      document.getElementById('reset').addEventListener('click', () => {
+        for(const key of Object.keys(selections)) delete selections[key];
+        updateButtons();save();result.className='result';result.textContent='';
+      });
+      load();updateButtons();
+    })();
+  </script>
+</body>
+</html>
